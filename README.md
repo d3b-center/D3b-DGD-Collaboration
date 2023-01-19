@@ -1,6 +1,6 @@
-# D3b Bixu Repository Template
+# D3b DGD Collaboration
 
-Use this template to bootstrap a new D3b bixu repository 
+Hosts various code and workflows of mutual interest to D3b and SGS 
 
 ### Badges
 
