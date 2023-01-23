@@ -1,4 +1,4 @@
-cwlVersion: v1.0
+cwlVersion: v1.2
 class: CommandLineTool
 id: update-gene-symbols
 requirements:
@@ -8,7 +8,7 @@ requirements:
     ramMin: 4000
     coresMin: 2
   - class: DockerRequirement
-    dockerPull: 'pgc-images.sbgenomics.com/d3b-bixu/hotspots:0.1.0'
+    dockerPull: 'python:3.9.16-slim-bullseye'
   - class: InitialWorkDirRequirement
     listing:
       - entryname: update_fusion_gene_symbols.py
@@ -28,7 +28,7 @@ inputs:
     inputBinding: {position:1, prefix: "--old_symbol"} }
   new_symbol: { type: 'string?', doc: "Column name for the new gene symbol(s) in the HGNC TSV. Set to override script defaults",
     inputBinding: {position:1, prefix: "--new_symbol"} }
-  update_columns: {type: 'string?', doc: "Space-separated column names from the Fusions TSV where to update gene names (e.g. -u foo bar blah). Set to override script defaults",
+  update_columns: {type: 'string[]?', doc: "Space-separated column names from the Fusions TSV where to update gene names (e.g. -u foo bar blah). Set to override script defaults",
     inputBinding: {position:1, prefix: "--update_columns", shellQuote: false} }
 
 outputs:

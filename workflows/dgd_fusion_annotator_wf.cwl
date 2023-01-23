@@ -13,15 +13,15 @@ inputs:
   fusions_tsv: { type: File, doc: "Custom Fusions TSV file, i.e. fusion-dgd.tsv.gz" }
   old_symbol: { type: 'string?', doc: "Column name for the old gene symbol(s) in the HGNC TSV. Set to override script defaults" }
   new_symbol: { type: 'string?', doc: "Column name for the new gene symbol(s) in the HGNC TSV. Set to override script defaults" }
-  update_columns: {type: 'string?', doc: "Space-separated column names from the Fusions TSV where to update gene names (e.g. -u foo bar blah). Set to override script defaults" }
+  update_columns: {type: 'string[]?', doc: "Column names from the Fusions TSV where to update gene names (e.g. -u foo bar blah). Set to override script defaults" }
   # fusion standardization
-  caller: { type: [{type: enum, name: caller, symbols: ["STARFUSION", "ARRIBA", "DGD", "CUSTOM"]}], doc: "Caller used to produce input",
+  caller: { type: ['null', {type: enum, name: caller, symbols: ["DGD", "STARFUSION", "ARRIBA", "CUSTOM"]}], doc: "Caller used to produce input",
     default: "DGD" }
   # annotate fusion
   genome_tar: {type: 'File', doc: "STAR-Fusion CTAT Genome lib", "sbg:suggestedValue": {
       class: File, path: 62853e7ad63f7c6d8d7ae5a8, name: GRCh38_v39_CTAT_lib_Mar242022.CUSTOM.tar.gz}}
-  genome_untar_path: {type: ['null', string], doc: "This is what the path will be when genome_tar is unpackaged", default: "GRCh38_v39_CTAT_lib_Mar242022.CUSTOM"}
-  col_num: {type: ['null', int], doc: "column number in file of fusion name, use 24 for arriba v1.1, 30 for v2, 1 for DGD", default: 1}
+  genome_untar_path: {type: 'string?', doc: "This is what the path will be when genome_tar is unpackaged", default: "GRCh38_v39_CTAT_lib_Mar242022.CUSTOM"}
+  col_num: {type: 'int?', doc: "column number in file of fusion name, use 24 for arriba v1.1, 30 for v2, 1 for DGD", default: 1}
 
 outputs:
   annotated_fusion_tsv: { type: File, outputSource: fusion_annotator/annotated_tsv}
@@ -68,3 +68,4 @@ $namespaces:
 hints:
   - class: 'sbg:AWSInstanceType'
     value: c5.2xlarge;ebs-gp2;400
+    doc: "Chosen for speed and lower cost"
