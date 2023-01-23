@@ -35,4 +35,4 @@ outputs:
   updated_fusion_tsv:
     type: File
     outputBinding:
-      glob: '*.tsv*'
+      glob: $(inputs.output_filename)
