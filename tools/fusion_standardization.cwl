@@ -9,30 +9,27 @@ requirements:
     coresMin: 2
   - class: DockerRequirement
     dockerPull: 'pgc-images.sbgenomics.com/d3b-bixu/annofuse:0.91.0'
+  - class: InitialWorkDirRequirement
+    listing:
+      - entryname: fusion_standardization_wrapper.R
+        entry:
+          $include: ../scripts/fusion_standardization_wrapper.R
 
-baseCommand: [Rscript, -e]
-
-arguments:
-  - position: 1
-    shellQuote: false
-    valueFrom: |-
-      '
-      library(readr)
-      library(annoFuse)
-      dgd_df<-read_tsv("$(inputs.fusions_tsv.path)")
-      placeholder <- c("Gene2A", "Gene2B")
-      dgd_df[ , placeholder] <- "NA"
-      dgd_df[ , "annots"] <- ""
-      dgd_std_df<-fusion_standardization(dgd_df, caller="CUSTOM")
-      write.table(dgd_std_df,"$(inputs.output_basename)_standardized.tsv",sep="\t",quote=FALSE,row.names = FALSE)
-      '
+baseCommand: [Rscript, fusion_standardization_wrapper.R]
 
 inputs:
-  fusions_tsv: { type: File, doc: "Custom Fusions TSV file, i.e. fusion-dgd.tsv.gz" }
-  output_basename: { type: string, doc: "Basename for the output TSV file" }
+  fusions_tsv: { type: File, doc: "Input fusion TSV file, i.e. fusion-dgd.tsv.gz. Can be compressed or uncompressed",
+    inputBinding: {position: 1, prefix: "--fusions_tsv"} }
+  caller: { type: [{type: enum, name: caller, symbols: ["STARFUSION", "ARRIBA", "DGD", "CUSTOM"]}], doc: "Caller used to produce input",
+    inputBinding: {position: 1, prefix: "--caller"} }
+  tumorID: { type: 'string?', doc: "'Sample' ID to fill in. Recommended for STARFUSION, ARRIBA",
+    inputBinding: {position: 1, prefix: "--tumorID"} }
+  input_json_file: { type: 'File?', doc: "json file with FusionName,Gene1A,Gene1B,Gene2A,Gene2B,Fusion_Type,annots if CUSTOM and needs remapping",
+    inputBinding: {position: 1, prefix: "--input_json_file"} }
+  output_basename: { type: 'string?', doc: "Basename for the output TSV file" }
 
 outputs:
-  output_annotated_fusions:
+  standardized_fusions:
     type: File
     outputBinding:
       glob: '*.tsv'

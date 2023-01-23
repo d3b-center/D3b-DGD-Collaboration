@@ -32,7 +32,7 @@ inputs:
     inputBinding: {position:1, prefix: "--update_columns", shellQuote: false} }
 
 outputs:
-  output_tsv:
+  updated_fusion_tsv:
     type: File
     outputBinding:
       glob: '*.tsv*'
