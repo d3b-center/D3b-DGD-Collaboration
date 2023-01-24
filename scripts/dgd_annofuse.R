@@ -45,5 +45,5 @@ fusionReferenceDataTab <- read.delim(
 annotated_fusion_calls <- annotate_fusion_calls (fusionQCFiltered,
                                   geneListReferenceDataTab,
                                   fusionReferenceDataTab,
-                                  checkReciprocal = TRUE)
+                                  checkReciprocal = FALSE)
 write.table(annotated_fusion_calls, paste(output_basename, ".annoFuse_filter.tsv", sep=""), sep="\t",quote=FALSE,row.names = FALSE)

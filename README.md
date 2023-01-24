@@ -29,5 +29,4 @@ In order to make the outputs harmonized with our fusion results we:
    - `col_num`: column number in file of fusion name, 0-based array style. Use 24 for arriba v1.1, 30 for v2, 1 for DGD, default: 1
 
 ### Output
-`annotated_fusion_tsv`: Standardized and annotated fusion results file
 `annofuse_filtered_fusions_tsv`: Standardized, annotated and annoFuse filtered fusion results file

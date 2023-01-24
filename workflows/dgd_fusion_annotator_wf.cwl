@@ -24,7 +24,6 @@ inputs:
   col_num: {type: 'int?', doc: "column number in file of fusion name, 0-based array style, use 24 for arriba v1.1, 30 for v2, 1 for DGD", default: 1}
 
 outputs:
-  annotated_fusion_tsv: { type: File, outputSource: fusion_annotator/annotated_tsv }
   annofuse_filtered_fusions_tsv: { type: File, outputSource: annoFuse/annofuse_filtered_fusions_tsv }
 
 steps:
