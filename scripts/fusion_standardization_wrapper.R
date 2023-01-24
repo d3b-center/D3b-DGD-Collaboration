@@ -42,8 +42,13 @@ output_basename <- opts$output_basename
 
 fusion_df<-read_tsv(fusions_tsv)
 if (caller == "DGD" ){
-    placeholder <- c("Gene2A", "Gene2B", "annots")
+    # annots needs to go here, since Gene2 values are blank for next step, last two required for annoFuse
+    placeholder <- c("annots", "Gene2A", "Gene2B", "LeftBreakpoint", "RightBreakpoint")
     fusion_df[ , placeholder] <- ""
+    # cols required for fusion qc filtering
+    ct_cols <- c('JunctionReadCount', 'SpanningFragCount')
+    fusion_df[ , ct_cols] <- 0
+
     fusion_std_df<-fusion_standardization(fusion_df, caller="CUSTOM")
 } else{
     fusion_std_df<-fusion_standardization(fusion_df, caller=caller, tumorID=tumorID, input_json_file=input_json_file)
