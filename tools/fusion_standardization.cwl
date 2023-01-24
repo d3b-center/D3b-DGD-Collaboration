@@ -26,7 +26,8 @@ inputs:
     inputBinding: {position: 1, prefix: "--tumorID"} }
   input_json_file: { type: 'File?', doc: "json file with FusionName,Gene1A,Gene1B,Gene2A,Gene2B,Fusion_Type,annots if CUSTOM and needs remapping",
     inputBinding: {position: 1, prefix: "--input_json_file"} }
-  output_basename: { type: 'string?', doc: "Basename for the output TSV file" }
+  output_basename: { type: 'string?', doc: "Basename for the output TSV file",
+        inputBinding: {position: 1, prefix: "--output_basename"} }
 
 outputs:
   standardized_fusions:

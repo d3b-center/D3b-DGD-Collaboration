@@ -24,7 +24,8 @@ inputs:
   col_num: {type: 'int?', doc: "column number in file of fusion name, 0-based array style, use 24 for arriba v1.1, 30 for v2, 1 for DGD", default: 1}
 
 outputs:
-  annotated_fusion_tsv: { type: File, outputSource: fusion_annotator/annotated_tsv}
+  annotated_fusion_tsv: { type: File, outputSource: fusion_annotator/annotated_tsv }
+  annofuse_filtered_fusions_tsv: { type: File, outputSource: annoFuse/annofuse_filtered_fusions_tsv }
 
 steps:
   update_gene_symbols:
@@ -61,6 +62,13 @@ steps:
       col_num: col_num
       output_basename: output_basename
     out: [annotated_tsv]
+
+  annoFuse:
+    run: ../tools/dgd_annoFuse.cwl
+    in:
+      dgd_annot_std_fusions_tsv: fusion_annotator/annotated_tsv
+      output_basename: output_basename
+    out: [annofuse_filtered_fusions_tsv]
 
 $namespaces:
   sbg: https://sevenbridges.com
