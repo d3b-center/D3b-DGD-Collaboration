@@ -1,6 +1,6 @@
 # D3b DGD Collaboration
 
-Hosts various code and workflows of mutual interest to D3b and DGD 
+Hosts various code and workflows of mutual interest
 
 ## DGD Fusion Annotation
 This is a workflow that annotates a DGD fusion file.

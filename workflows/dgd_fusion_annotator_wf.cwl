@@ -19,9 +19,9 @@ inputs:
     default: "DGD" }
   # annotate fusion
   genome_tar: {type: 'File', doc: "STAR-Fusion CTAT Genome lib", "sbg:suggestedValue": {
-      class: File, path: 62853e7ad63f7c6d8d7ae5a8, name: GRCh38_v39_CTAT_lib_Mar242022.CUSTOM.tar.gz}}
+      class: File, path: 63cff818facdd82011c8d6fe, name: GRCh38_v39_fusion_annot_custom.tar.gz}}
   genome_untar_path: {type: 'string?', doc: "This is what the path will be when genome_tar is unpackaged", default: "GRCh38_v39_CTAT_lib_Mar242022.CUSTOM"}
-  col_num: {type: 'int?', doc: "column number in file of fusion name, use 24 for arriba v1.1, 30 for v2, 1 for DGD", default: 1}
+  col_num: {type: 'int?', doc: "column number in file of fusion name, 0-based array style, use 24 for arriba v1.1, 30 for v2, 1 for DGD", default: 1}
 
 outputs:
   annotated_fusion_tsv: { type: File, outputSource: fusion_annotator/annotated_tsv}

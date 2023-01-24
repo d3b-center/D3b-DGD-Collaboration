@@ -42,9 +42,8 @@ output_basename <- opts$output_basename
 
 fusion_df<-read_tsv(fusions_tsv)
 if (caller == "DGD" ){
-    placeholder <- c("Gene2A", "Gene2B")
-    fusion_df[ , placeholder] <- "NA"
-    fusion_df[ , "annots"] <- ""
+    placeholder <- c("Gene2A", "Gene2B", "annots")
+    fusion_df[ , placeholder] <- ""
     fusion_std_df<-fusion_standardization(fusion_df, caller="CUSTOM")
 } else{
     fusion_std_df<-fusion_standardization(fusion_df, caller=caller, tumorID=tumorID, input_json_file=input_json_file)
