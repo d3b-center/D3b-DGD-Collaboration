@@ -9,6 +9,7 @@ In order to make the outputs harmonized with our fusion results we:
 1. Update HGNC gene symbols where possible
 1. Format output to add `annots` and `FusionName` columns. `FusionName` is basically `Gene1A--Gene1B`
 1. Annotate the formatted and updated file using fusionannotator, which is also used by STAR-Fusion
+1. Filter/annotate additionally with annoFuse
 
 ### Inputs:
  - Many input:
@@ -23,9 +24,10 @@ In order to make the outputs harmonized with our fusion results we:
  - Fusion standardization
    - `caller`: Caller used to produce input
  - Annotate fusions
-   - `genome_tar`: STAR-Fusion CTAT Genome lib. Recommend [GRCh38_v39_CTAT_lib_Mar242022.CUSTOM.tar.gz](https://cavatica.sbgenomics.com/u/kfdrc-harmonization/kf-references/files/62853e7ad63f7c6d8d7ae5a8/)
+   - `genome_tar`: Tar ball with files listed [here](https://github.com/FusionAnnotator/FusionAnnotator/blob/9cd889a87c838243555f14beabfc677f539084a3/FusionAnnotator#L85-L95) from STAR-Fusion CTAT Genome lib. Recommend [GRCh38_v39_fusion_annot_custom.tar.gz](https://cavatica.sbgenomics.com/u/kfdrc-harmonization/kf-references/files/63cff818facdd82011c8d6fe/)
    - `genome_untar_path`: This is what the path will be when genome_tar is unpackaged, if recommened used: GRCh38_v39_CTAT_lib_Mar242022.CUSTOM
    - `col_num`: column number in file of fusion name, 0-based array style. Use 24 for arriba v1.1, 30 for v2, 1 for DGD, default: 1
 
 ### Output
 `annotated_fusion_tsv`: Standardized and annotated fusion results file
+`annofuse_filtered_fusions_tsv`: Standardized, annotated and annoFuse filtered fusion results file
