@@ -25,11 +25,13 @@ inputs:
   output_filename: { type: string, doc: "Name for the output TSV file. Adding gz will output compressed",
     inputBinding: {position: 1, prefix: "--output_filename"} }
   old_symbol: { type: 'string?', doc: "Column name for the old gene symbol(s) in the HGNC TSV. Set to override script defaults",
-    inputBinding: {position:1, prefix: "--old_symbol"} }
+    inputBinding: {position: 1, prefix: "--old_symbol"} }
   new_symbol: { type: 'string?', doc: "Column name for the new gene symbol(s) in the HGNC TSV. Set to override script defaults",
-    inputBinding: {position:1, prefix: "--new_symbol"} }
-  update_columns: {type: 'string[]?', doc: "Space-separated column names from the Fusions TSV where to update gene names (e.g. -u foo bar blah). Set to override script defaults",
-    inputBinding: {position:1, prefix: "--update_columns", shellQuote: false} }
+    inputBinding: { position: 1, prefix: "--new_symbol"} }
+  update_columns: { type: 'string[]?', doc: "Space-separated column names from the Fusions TSV where to update gene names (e.g. -u foo bar blah). Set to override script defaults",
+    inputBinding: { position: 1, prefix: "--update_columns", shellQuote: false} }
+  retain_records: { type: 'boolean?', inputBinding: { position: 1, prefix: "--retain_records" }, doc: "When updating a record with a new gene name, keep the original record." }
+  explode_records: { type: 'boolean?', inputBinding: { position: 1, prefix: "--explode_records" }, doc: "Return all available updated names. Will create additional records for each additional new gene name." }
 
 outputs:
   updated_fusion_tsv:

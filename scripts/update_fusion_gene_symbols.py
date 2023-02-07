@@ -121,6 +121,7 @@ def update_fusions_tsv(fusions_file, sym_dict, update_columns, out_file, retain_
         update_columns: A list of columnnames in the fusions_file that must be updated
         out_file: A string filename (files ending in GZ will be compressed) for the output
         retain_records: A boolean that indicates if original records should be kept
+        explode_records: A boolean that enables multirecord outputs
 
     Returns:
         None
@@ -138,55 +139,72 @@ def update_fusions_tsv(fusions_file, sym_dict, update_columns, out_file, retain_
                 for column in update_columns:
                     new_lines = process_lines(new_lines, sym_dict, header, column, explode_records)
                 for new_line in new_lines:
-                    if new_line == line:
+                    # No need to print it again, we already have it
+                    if retain_records and new_line == line:
                         continue
                     w.write(new_line)
 
-def process_lines(fusion_lines, sym_dict, header, column_name, explode_records)
+def process_lines(fusion_lines, sym_dict, header, column_name, explode_records):
     """Given a block of lines, process each one with update_fusion_line
+
+    This function is an abstraction to handle the iterative process introduced by the
+    explode_records functionality. Basically a single record can become many records depending
+    on how many new genes and old gene can have. Here we have a function that iterates over those
+    lines and calls the update_fusion_line function to give us a new set of lines that can come
+    back through here in future iterations. One key thing is to flatten the array on the way out as
+    we'll be creating a nested array as we iterate.
+
+    Args:
+        fusion_lines: A list of line strings to iterate through and process
+        sym_dict: A dict with old symbol keys and corresponding value list of new symbols
+        column_name: A string of the columnname in the fusions_file that must be updated
+        header: A list containing the columnnames from the fusions_file header
+        explode_records: A boolean that enables multirecord outputs
+
+    Returns:
+        A list of fusion record lines with updated gene names.
     """
     outarr = []
     for line in fusion_lines:
-        outarr.append(update_fusion_line(line, sym_dict, header, column, explode_records))
-    flatarr = [item for sub_list in outarr for item in sub_list]
+        outarr.append(update_fusion_line(line, sym_dict, header, column_name, explode_records))
+    flatarr = [item + '\n' for sub_list in outarr for item in sub_list]
     return flatarr
 
 def update_fusion_line(fusion_line, sym_dict, header, column_name, explode_records):
-    """Take a fusion line and update the requested columns, return the line
+    """Take a fusion line and update the requested column, return the line
 
-    Given a single line from the custom fusions file, this function is tasked with identifying
-    which columns to alter and invoking the gene name updater appropriately. In most cases,
-    it expects only a single gene name to be present in a given column. In this case, it will
-    simply use the gene name updater to get the new gene name (if there is one). It will also
-    check for fusions by string checking for '--'. If it does identify a fusion it will split
-    those gene names and send both off to be processed individually. It will then reanneal them
-    with the fusion notation ('--'). Once it has the new entry it will update the column, repeating
-    until it is out of column names.
+    Given a single line from the custom fusions file, this function is tasked with invoking the
+    gene name updater appropriately. In most cases, it expects only a single gene name to be present
+    in a given column. In this case, it will use the gene name updater to get the new gene name. It
+    will also check for fusions by string checking for '--'. If it does identify a fusion it will
+    split those gene names and send both off to be processed individually. It will then reanneal
+    them with the fusion notation ('--'). Once it has the new gene names it will iterate over them,
+    update the column value, and add that line to an array. That array is then returned.
 
     Args:
         fusion_line: A string record from the Custom Fusion file. Represents a single line
         sym_dict: A dict with old symbol keys and corresponding value list of new symbols
         column_name: A string of the columnname in the fusions_file that must be updated
         header: A list containing the columnnames from the fusions_file header
-        explode_records: 
+        explode_records: A boolean that enables multirecord outputs
 
     Returns:
         List of all potential new fusion lines.
     """
-    split_fuse = fusion_line.split('\t')
+    split_fuse = fusion_line.strip().split('\t')
     outlines = []
-    col_index = header.index(colname)
+    col_index = header.index(column_name)
     if '--' in split_fuse[col_index]:
         genea, geneb = split_fuse[col_index].split('--')
-        new_geneas = update_gene_name(genea, sym_dict)
-        new_genebs = update_gene_name(geneb, sym_dict)
+        new_geneas = update_gene_name(genea, sym_dict, explode_records)
+        new_genebs = update_gene_name(geneb, sym_dict, explode_records)
         new_entries = [i + "--" + j for i in new_geneas for j in new_genebs]
     else:
         gene = split_fuse[col_index]
-        new_entries = update_gene_name(gene, sym_dict)
+        new_entries = update_gene_name(gene, sym_dict, explode_records)
     for new_entry in new_entries:
         split_fuse[col_index] = new_entry
-        outlines.append('\t'.join(split_fuse) + '\n')
+        outlines.append('\t'.join(split_fuse))
     return outlines 
 
 def update_gene_name(old_gene, sym_dict, explode_records):
@@ -200,6 +218,7 @@ def update_gene_name(old_gene, sym_dict, explode_records):
     Args:
         old_gene: A string name for the old_gene
         sym_dict: A dict with old symbol keys and corresponding value list of new symbols
+        explode_records: A boolean that enables multirecord outputs
 
     Returns:
         new_genes: A list of strings with new gene names or an empty list if no upgrade.
@@ -221,7 +240,7 @@ def main():
     """
     args = get_args()
     sym_dict = hgnc_tsv_to_dict(args.hgnc_tsv, args.old_symbol, args.new_symbol)
-    update_fusions_tsv(args.fusions_tsv, sym_dict, args.update_columns, args.output_filename, args.retain_records)
+    update_fusions_tsv(args.fusions_tsv, sym_dict, args.update_columns, args.output_filename, args.retain_records, args.explode_records)
 
 if __name__ == "__main__":
     main()
