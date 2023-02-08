@@ -17,6 +17,8 @@ requirements:
 
 baseCommand: [python3, update_fusion_gene_symbols.py]
 
+stdout: "new_entries.log"
+
 inputs:
   hgnc_tsv: { type: File, doc: "Gene name database TSV file from HGNC. i.e. hgnc_complete_set.txt",
     inputBinding: {position: 1, prefix: "--hgnc_tsv"} }
@@ -38,3 +40,5 @@ outputs:
     type: File
     outputBinding:
       glob: $(inputs.output_filename)
+  new_entries_log:
+    type: stdout
