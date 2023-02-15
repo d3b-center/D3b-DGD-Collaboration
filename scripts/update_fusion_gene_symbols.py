@@ -138,10 +138,15 @@ def update_fusions_tsv(fusions_file, sym_dict, update_columns, out_file, retain_
                 # Iteratively recreate and expand the new_lines list
                 for column in update_columns:
                     new_lines = process_lines(new_lines, sym_dict, header, column, explode_records)
-                for new_line in new_lines:
+                # It's possible there are duplicate entires, get rid of them
+                uniq_lines = list(set(new_lines))
+                for new_line in uniq_lines:
                     # No need to print it again, we already have it
                     if retain_records and new_line == line:
                         continue
+                    # STDOUT log for new entries
+                    if new_line != line:
+                        print(f'New entry added: {new_line.strip()}')
                     w.write(new_line)
 
 def process_lines(fusion_lines, sym_dict, header, column_name, explode_records):
