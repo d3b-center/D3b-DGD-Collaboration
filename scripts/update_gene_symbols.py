@@ -55,7 +55,7 @@ def get_args():
             "--update_columns",
             nargs='+',
             default=["FusionName","Gene1A","Gene1B"],
-            help="Space-separated column names from the Fusions TSV where to update gene names \
+            help="Space-separated column names from the Input TSV where to update gene names \
                     (e.g. -u foo bar blah). Default: %(default)s")
     optional.add_argument(
             "-z",
