@@ -61,8 +61,8 @@ def get_args():
             "-z",
             "--fake_columns",
             nargs='+',
-            help="Space-separated column names ro createa faux-header if the file is headerless \
-                    (e.g. -u foo bar blah). Default: %(default)s")
+            help="Space-separated column names ro create a faux-header if the file is headerless \
+                    (e.g. -u foo bar blah).")
     optional.add_argument(
             "--retain_records",
             action='store_true',
