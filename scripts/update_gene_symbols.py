@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 
-"""Using the HGNC Gene Name Database TSV, update any old gene names in the custom fusions TSV
+"""Using the HGNC Gene Name Database TSV, update any old gene names in the input TSV
 
-A lightweight program to iterate through the custom fusions file and check all requested columns
+A lightweight program to iterate through the input tsv file and check all requested columns
 that contain gene names against the HGNC database. The program does this simply by creating
 a dict from the records in the HGNC file. That dict has old gene names as the keys and any
 associated new gene names are stored in the value as a list. As the program iterates through
-the custom fusions file it will update the columns as requested using simple key lookups on
+the file it will update the columns as requested using simple key lookups on
 the created dict. Outputs are written line by line to an output file that can be compressed
 if named GZ.
 
 Typical usage example:
-    update_fusion_gene_symbols.py -g hgnc_complete_set.txt -f fusion-dgd.tsv.gz -o test.tsv.gz
+    update_gene_symbols.py -g hgnc_complete_set.txt -f fusion-dgd.tsv.gz -o test.tsv.gz
 """
 
 import argparse
@@ -117,11 +117,11 @@ def hgnc_tsv_to_dict(hgnc_file, old_sym, new_sym):
 def update_input_tsv(input_tsv, sym_dict, update_columns, out_file, retain_records, explode_records, fake_columns):
     """Reads lines of the input_tsv, updates the genes, and writes to an output
 
-    Iterates through the custom fusions file and feeds each line to the line processor.
+    Iterates through the input tsv file and feeds each line to the line processor.
     Takes the output of the line processor and writes that to the output file.
 
     Args:
-        input_tsv: An unopened TXT or TXT.GZ file that contains Custom Fusion information
+        input_tsv: An unopened TXT or TXT.GZ file that contains gene information to be updated
         sym_dict: A dict with old symbol keys and corresponding value list of new symbols
         update_columns: A list of columnnames in the input_tsv that must be updated
         out_file: A string filename (files ending in GZ will be compressed) for the output
@@ -159,7 +159,7 @@ def update_input_tsv(input_tsv, sym_dict, update_columns, out_file, retain_recor
                         print(f'New entry added: {new_line.strip()}')
                     w.write(new_line)
 
-def process_lines(fusion_lines, sym_dict, header, column_name, explode_records):
+def process_lines(input_lines, sym_dict, header, column_name, explode_records):
     """Given a block of lines, process each one with update_tsv_line
 
     This function is an abstraction to handle the iterative process introduced by the
@@ -170,43 +170,43 @@ def process_lines(fusion_lines, sym_dict, header, column_name, explode_records):
     we'll be creating a nested array as we iterate.
 
     Args:
-        fusion_lines: A list of line strings to iterate through and process
+        input_lines: A list of line strings to iterate through and process
         sym_dict: A dict with old symbol keys and corresponding value list of new symbols
         column_name: A string of the columnname in the input_tsv that must be updated
         header: A list containing the columnnames from the input_tsv header
         explode_records: A boolean that enables multirecord outputs
 
     Returns:
-        A list of fusion record lines with updated gene names.
+        A list of record lines with updated gene names.
     """
     outarr = []
-    for line in fusion_lines:
+    for line in input_lines:
         outarr.append(update_tsv_line(line, sym_dict, header, column_name, explode_records))
     flatarr = [item + '\n' for sub_list in outarr for item in sub_list]
     return flatarr
 
-def update_tsv_line(fusion_line, sym_dict, header, column_name, explode_records):
-    """Take a fusion line and update the requested column, return the line
+def update_tsv_line(input_line, sym_dict, header, column_name, explode_records):
+    """Take an input line and update the requested column, return the line
 
-    Given a single line from the custom fusions file, this function is tasked with invoking the
+    Given a single line from the input tsv file, this function is tasked with invoking the
     gene name updater appropriately. In most cases, it expects only a single gene name to be present
     in a given column. In this case, it will use the gene name updater to get the new gene name. It
-    will also check for fusions by string checking for '--'. If it does identify a fusion it will
+    will also check for fusions (a special use case) by string checking for '--'. If it does identify a fusion it will
     split those gene names and send both off to be processed individually. It will then reanneal
     them with the fusion notation ('--'). Once it has the new gene names it will iterate over them,
     update the column value, and add that line to an array. That array is then returned.
 
     Args:
-        fusion_line: A string record from the Custom Fusion file. Represents a single line
+        input_line: A string record from the input tsv file. Represents a single line
         sym_dict: A dict with old symbol keys and corresponding value list of new symbols
         column_name: A string of the columnname in the input_tsv that must be updated
         header: A list containing the columnnames from the input_tsv header
         explode_records: A boolean that enables multirecord outputs
 
     Returns:
-        List of all potential new fusion lines.
+        List of all potential newly updated lines.
     """
-    split_fuse = fusion_line.strip().split('\t')
+    split_fuse = input_line.strip().split('\t')
     outlines = []
     col_index = header.index(column_name)
     if '--' in split_fuse[col_index]:
