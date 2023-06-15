@@ -61,8 +61,7 @@ def get_args():
             "-z",
             "--fake_columns",
             nargs='+',
-            help="Space-separated column names ro create a faux-header if the file is headerless \
-                    (e.g. -u foo bar blah).")
+            help="Space-separated column names to use as header for Input TSV. Overrides script header detection (e.g. -z foo bar blah).")
     optional.add_argument(
             "--retain_records",
             action='store_true',
