@@ -13,7 +13,7 @@ inputs:
   input_tsv: { type: File, doc: "Input TSV file, i.e. fusion-dgd.tsv.gz" }
   old_symbol: { type: 'string?', doc: "Column name for the old gene symbol(s) in the HGNC TSV. Set to override script defaults" }
   new_symbol: { type: 'string?', doc: "Column name for the new gene symbol(s) in the HGNC TSV. Set to override script defaults" }
-  update_columns: {type: 'string[]?', doc: "Column names from the Fusions TSV where to update gene names (e.g. -u foo bar blah). Set to override script defaults" }
+  update_columns: {type: 'string[]?', doc: "Column names from the Input TSV where to update gene names (e.g. -u foo bar blah). Set to override script defaults" }
   # fusion standardization
   caller: { type: ['null', {type: enum, name: caller, symbols: ["DGD", "STARFUSION", "ARRIBA", "CUSTOM"]}], doc: "Caller used to produce input",
     default: "DGD" }
