@@ -20,7 +20,8 @@ In order to make the outputs harmonized with our fusion results we:
    - `input_tsv`: Custom Fusions TSV file, i.e. fusion-dgd.tsv.gz }
    - `old_symbol`: Column name for the old gene symbol(s) in the HGNC TSV. Set to override script defaults
    - `new_symbol`: Column name for the new gene symbol(s) in the HGNC TSV. Set to override script defaults
-   - `update_columns`: Column names from the Fusions TSV where to update gene names (e.g. -u foo bar blah). Set to override script defaults: `["FusionName","Gene1A","Gene1B"]`
+   - `update_columns`: Column names from the Input TSV where to update gene names (e.g. -u foo bar blah). Set to override script defaults: `["FusionName","Gene1A","Gene1B"]`
+   - `fake_columns`: Column names to use as the header for the Input TSV. Set to override script using first line of Input TSV as header or if file has no header (e.g. -z foo bar blah). 
  - Fusion standardization
    - `caller`: Caller used to produce input
  - Annotate fusions
