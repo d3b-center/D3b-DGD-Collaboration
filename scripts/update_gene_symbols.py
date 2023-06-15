@@ -47,9 +47,9 @@ def get_args():
             help="Column name for the new gene symbol in the HGNV TSV. Default: %(default)s")
     required.add_argument(
             "-f",
-            "--fusions_tsv",
+            "--input_tsv",
             required=True,
-            help="Custom fusions TSV file: fusion-dgd.tsv.gz")
+            help="Input TSV file: fusion-dgd.tsv.gz")
     optional.add_argument(
             "-u",
             "--update_columns",
@@ -115,16 +115,16 @@ def hgnc_tsv_to_dict(hgnc_file, old_sym, new_sym):
                     sym_dict[old_symbol] = [new_sym_info]
     return sym_dict
 
-def update_fusions_tsv(fusions_file, sym_dict, update_columns, out_file, retain_records, explode_records, fake_columns):
-    """Reads lines of the fusions_file, updates the genes, and writes to an output
+def update_input_tsv(input_tsv, sym_dict, update_columns, out_file, retain_records, explode_records, fake_columns):
+    """Reads lines of the input_tsv, updates the genes, and writes to an output
 
     Iterates through the custom fusions file and feeds each line to the line processor.
     Takes the output of the line processor and writes that to the output file.
 
     Args:
-        fusions_file: An unopened TXT or TXT.GZ file that contains Custom Fusion information
+        input_tsv: An unopened TXT or TXT.GZ file that contains Custom Fusion information
         sym_dict: A dict with old symbol keys and corresponding value list of new symbols
-        update_columns: A list of columnnames in the fusions_file that must be updated
+        update_columns: A list of columnnames in the input_tsv that must be updated
         out_file: A string filename (files ending in GZ will be compressed) for the output
         retain_records: A boolean that indicates if original records should be kept
         explode_records: A boolean that enables multirecord outputs
@@ -134,7 +134,7 @@ def update_fusions_tsv(fusions_file, sym_dict, update_columns, out_file, retain_
     """
     # output to STDERR old -> new gene changes
     print ('{}\t{}'.format("old gene", "new gene"), file=sys.stderr)
-    with (gzip.open if fusions_file.endswith("gz") else open)(fusions_file, "rt", encoding="utf-8") as f:
+    with (gzip.open if input_tsv.endswith("gz") else open)(input_tsv, "rt", encoding="utf-8") as f:
         with (gzip.open if out_file.endswith("gz") else open)(out_file, "wt", encoding="utf-8") as w:
             if fake_columns is None:
                 header = f.readline().strip().split('\t')
@@ -161,20 +161,20 @@ def update_fusions_tsv(fusions_file, sym_dict, update_columns, out_file, retain_
                     w.write(new_line)
 
 def process_lines(fusion_lines, sym_dict, header, column_name, explode_records):
-    """Given a block of lines, process each one with update_fusion_line
+    """Given a block of lines, process each one with update_tsv_line
 
     This function is an abstraction to handle the iterative process introduced by the
     explode_records functionality. Basically a single record can become many records depending
     on how many new genes and old gene can have. Here we have a function that iterates over those
-    lines and calls the update_fusion_line function to give us a new set of lines that can come
+    lines and calls the update_tsv_line function to give us a new set of lines that can come
     back through here in future iterations. One key thing is to flatten the array on the way out as
     we'll be creating a nested array as we iterate.
 
     Args:
         fusion_lines: A list of line strings to iterate through and process
         sym_dict: A dict with old symbol keys and corresponding value list of new symbols
-        column_name: A string of the columnname in the fusions_file that must be updated
-        header: A list containing the columnnames from the fusions_file header
+        column_name: A string of the columnname in the input_tsv that must be updated
+        header: A list containing the columnnames from the input_tsv header
         explode_records: A boolean that enables multirecord outputs
 
     Returns:
@@ -182,11 +182,11 @@ def process_lines(fusion_lines, sym_dict, header, column_name, explode_records):
     """
     outarr = []
     for line in fusion_lines:
-        outarr.append(update_fusion_line(line, sym_dict, header, column_name, explode_records))
+        outarr.append(update_tsv_line(line, sym_dict, header, column_name, explode_records))
     flatarr = [item + '\n' for sub_list in outarr for item in sub_list]
     return flatarr
 
-def update_fusion_line(fusion_line, sym_dict, header, column_name, explode_records):
+def update_tsv_line(fusion_line, sym_dict, header, column_name, explode_records):
     """Take a fusion line and update the requested column, return the line
 
     Given a single line from the custom fusions file, this function is tasked with invoking the
@@ -200,8 +200,8 @@ def update_fusion_line(fusion_line, sym_dict, header, column_name, explode_recor
     Args:
         fusion_line: A string record from the Custom Fusion file. Represents a single line
         sym_dict: A dict with old symbol keys and corresponding value list of new symbols
-        column_name: A string of the columnname in the fusions_file that must be updated
-        header: A list containing the columnnames from the fusions_file header
+        column_name: A string of the columnname in the input_tsv that must be updated
+        header: A list containing the columnnames from the input_tsv header
         explode_records: A boolean that enables multirecord outputs
 
     Returns:
@@ -258,7 +258,7 @@ def main():
     """
     args = get_args()
     sym_dict = hgnc_tsv_to_dict(args.hgnc_tsv, args.old_symbol, args.new_symbol)
-    update_fusions_tsv(args.fusions_tsv, sym_dict, args.update_columns, args.output_filename, args.retain_records, args.explode_records, args.fake_columns)
+    update_input_tsv(args.input_tsv, sym_dict, args.update_columns, args.output_filename, args.retain_records, args.explode_records, args.fake_columns)
 
 if __name__ == "__main__":
     main()

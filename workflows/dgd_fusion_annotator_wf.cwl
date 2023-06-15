@@ -10,7 +10,7 @@ inputs:
   output_basename: { type: string, doc: "Basename for the output TSV file" }
   # update gene symbols
   hgnc_tsv: { type: 'File?', doc: "Gene name database TSV file from HGNC. i.e. hgnc_complete_set.txt. If not provided, updated will be skipped" }
-  fusions_tsv: { type: File, doc: "Custom Fusions TSV file, i.e. fusion-dgd.tsv.gz" }
+  input_tsv: { type: File, doc: "Input TSV file, i.e. fusion-dgd.tsv.gz" }
   old_symbol: { type: 'string?', doc: "Column name for the old gene symbol(s) in the HGNC TSV. Set to override script defaults" }
   new_symbol: { type: 'string?', doc: "Column name for the new gene symbol(s) in the HGNC TSV. Set to override script defaults" }
   update_columns: {type: 'string[]?', doc: "Column names from the Fusions TSV where to update gene names (e.g. -u foo bar blah). Set to override script defaults" }
@@ -32,7 +32,7 @@ steps:
     when: $(inputs.hgnc_tsv != null)
     in:
       hgnc_tsv: hgnc_tsv
-      fusions_tsv: fusions_tsv
+      input_tsv: input_tsv
       output_filename:
         source: output_basename
         valueFrom: |
@@ -40,13 +40,13 @@ steps:
       old_symbol: old_symbol
       new_symbol: new_symbol
       update_columns: update_columns
-    out: [updated_fusion_tsv]
+    out: [updated_tsv]
 
   fusion_standardization:
     run: ../tools/fusion_standardization.cwl
     in:
       fusions_tsv:
-        source: [update_gene_symbols/updated_fusion_tsv, fusions_tsv]
+        source: [update_gene_symbols/updated_tsv, input_tsv]
         pickValue: first_non_null
       caller: caller
       output_basename: output_basename
