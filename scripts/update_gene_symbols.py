@@ -127,7 +127,7 @@ def update_input_tsv(input_tsv, sym_dict, update_columns, out_file, retain_recor
         out_file: A string filename (files ending in GZ will be compressed) for the output
         retain_records: A boolean that indicates if original records should be kept
         explode_records: A boolean that enables multirecord outputs
-
+        fake_columns: A list of strings representing the header fields
     Returns:
         None
     """
