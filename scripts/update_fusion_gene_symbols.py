@@ -58,6 +58,12 @@ def get_args():
             help="Space-separated column names from the Fusions TSV where to update gene names \
                     (e.g. -u foo bar blah). Default: %(default)s")
     optional.add_argument(
+            "-z",
+            "--fake_columns",
+            nargs='+',
+            help="Space-separated column names ro createa faux-header if the file is headerless \
+                    (e.g. -u foo bar blah). Default: %(default)s")
+    optional.add_argument(
             "--retain_records",
             action='store_true',
             help="When updating a record with a new gene name, keep the original record.")
@@ -109,7 +115,7 @@ def hgnc_tsv_to_dict(hgnc_file, old_sym, new_sym):
                     sym_dict[old_symbol] = [new_sym_info]
     return sym_dict
 
-def update_fusions_tsv(fusions_file, sym_dict, update_columns, out_file, retain_records, explode_records):
+def update_fusions_tsv(fusions_file, sym_dict, update_columns, out_file, retain_records, explode_records, fake_columns):
     """Reads lines of the fusions_file, updates the genes, and writes to an output
 
     Iterates through the custom fusions file and feeds each line to the line processor.
@@ -126,10 +132,15 @@ def update_fusions_tsv(fusions_file, sym_dict, update_columns, out_file, retain_
     Returns:
         None
     """
+    # output to STDERR old -> new gene changes
+    print ('{}\t{}'.format("old gene", "new gene"), file=sys.stderr)
     with (gzip.open if fusions_file.endswith("gz") else open)(fusions_file, "rt", encoding="utf-8") as f:
         with (gzip.open if out_file.endswith("gz") else open)(out_file, "wt", encoding="utf-8") as w:
-            header = f.readline().strip().split('\t')
-            w.write('\t'.join(header) + '\n')
+            if fake_columns is None:
+                header = f.readline().strip().split('\t')
+                w.write('\t'.join(header) + '\n')
+            else:
+                header = '\t'.join(fake_columns)
             for line in f:
                 if retain_records:
                     w.write(line)
@@ -234,6 +245,8 @@ def update_gene_name(old_gene, sym_dict, explode_records):
     """
     new_genes = [old_gene]
     if old_gene in sym_dict:
+        # print change to stderr log
+        print ('{}\t{}'.format(old_gene, ','.join(sym_dict[old_gene])), file=sys.stderr)
         new_genes = sym_dict[old_gene]
         if not explode_records and len(new_genes) > 1:
             sys.exit(f"Error updating gene {old_gene}. HGNC has multiple options: {sym_dict[old_gene]}. To output all potential new genes use --explode_records flag.")
@@ -245,7 +258,7 @@ def main():
     """
     args = get_args()
     sym_dict = hgnc_tsv_to_dict(args.hgnc_tsv, args.old_symbol, args.new_symbol)
-    update_fusions_tsv(args.fusions_tsv, sym_dict, args.update_columns, args.output_filename, args.retain_records, args.explode_records)
+    update_fusions_tsv(args.fusions_tsv, sym_dict, args.update_columns, args.output_filename, args.retain_records, args.explode_records, args.fake_columns)
 
 if __name__ == "__main__":
     main()
