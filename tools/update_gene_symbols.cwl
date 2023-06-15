@@ -32,7 +32,7 @@ inputs:
     inputBinding: { position: 1, prefix: "--new_symbol"} }
   update_columns: { type: 'string[]?', doc: "Space-separated column names from the Fusions TSV where to update gene names (e.g. -u foo bar blah). Set to override script defaults",
     inputBinding: { position: 1, prefix: "--update_columns", shellQuote: false} }
-  fake_columns: { type: 'string[]?', doc: "Space-separated column names ro create a faux-header if the file is headerless (e.g. -u foo bar blah)",
+  fake_columns: { type: 'string[]?', doc: "Column names to use as the header for the Input TSV. Set to override script using first line of Input TSV as header or if file has no header (e.g. -z foo bar blah).",
     inputBinding: { position: 1, prefix: "--fake_columns", shellQuote: false} }
   retain_records: { type: 'boolean?', inputBinding: { position: 1, prefix: "--retain_records" }, doc: "When updating a record with a new gene name, keep the original record." }
   explode_records: { type: 'boolean?', inputBinding: { position: 1, prefix: "--explode_records" }, doc: "Return all available updated names. Will create additional records for each additional new gene name." }
