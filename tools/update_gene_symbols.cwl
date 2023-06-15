@@ -30,7 +30,7 @@ inputs:
     inputBinding: {position: 1, prefix: "--old_symbol"} }
   new_symbol: { type: 'string?', doc: "Column name for the new gene symbol(s) in the HGNC TSV. Set to override script defaults",
     inputBinding: { position: 1, prefix: "--new_symbol"} }
-  update_columns: { type: 'string[]?', doc: "Space-separated column names from the Fusions TSV where to update gene names (e.g. -u foo bar blah). Set to override script defaults",
+  update_columns: { type: 'string[]?', doc: "Space-separated column names from the Input TSV where to update gene names (e.g. -u foo bar blah). Set to override script defaults",
     inputBinding: { position: 1, prefix: "--update_columns", shellQuote: false} }
   fake_columns: { type: 'string[]?', doc: "Column names to use as the header for the Input TSV. Set to override script using first line of Input TSV as header or if file has no header (e.g. -z foo bar blah).",
     inputBinding: { position: 1, prefix: "--fake_columns", shellQuote: false} }
