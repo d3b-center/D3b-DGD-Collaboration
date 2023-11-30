@@ -8,7 +8,7 @@ requirements:
     ramMin: 4000
     coresMin: 2
   - class: DockerRequirement
-    dockerPull: 'pgc-images.sbgenomics.com/d3b-bixu/annofuse:0.91.0'
+    dockerPull: 'pgc-images.sbgenomics.com/d3b-bixu/annofuse:0.92.0'
   - class: InitialWorkDirRequirement
     listing:
       - entryname: fusion_standardization_wrapper.R
